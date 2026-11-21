@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#111214">
 <title>Load the Bar</title>
@@ -12,6 +12,7 @@
 </head>
 <body>
 <main>
+<section id="bar-page">
 <h1>Load the Bar</h1>
 <div class="seg" id="mode">
   <button data-m="kg">KG</button><button data-m="lb">LB</button>
@@ -33,14 +34,19 @@
 </div>
 
 <div class="pad" id="pad"></div>
+</section>
+<section id="timer" hidden><h1>Timer</h1></section>
+<section id="history" hidden><h1>History</h1></section>
+<section id="settings" hidden><h1>Settings</h1></section>
 
 </main>
 
-<nav class="tabs">
-  <button aria-current="page" aria-label="Bar"><svg viewBox="0 0 24 24"><path d="M2 12h20M5 8v8M8 6v12M16 6v12M19 8v8"/></svg></button>
-  <button disabled aria-label="Timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg></button>
-  <button disabled aria-label="History"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 3"/></svg></button>
-  <button disabled aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
+<nav class="tabs" id="tabs">
+  <span class="ind"></span>
+  <button data-p="bar-page" aria-label="Bar"><svg viewBox="0 0 24 24"><path d="M2 12h20M5 8v8M8 6v12M16 6v12M19 8v8"/></svg></button>
+  <button data-p="timer" aria-label="Timer"><svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg></button>
+  <button data-p="history" aria-label="History"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 3"/></svg></button>
+  <button data-p="settings" aria-label="Settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
 </nav>
 
 <script src="dist/app.js"></script>

@@ -2,6 +2,7 @@ import { drawBar } from './draw';
 import { drawPad } from './platepad';
 import { barKg, Plate, platesFor } from './plates';
 import { solve } from './solve';
+import { initTabs } from './tabs';
 import { load, save } from './state';
 import { fmt, step, toKg, toU, Unit } from './units';
 
@@ -60,4 +61,5 @@ function addPlate(p: Plate, dir: number): void {
 }
 $('minus').onclick = () => bump(-1);
 $('plus').onclick = () => bump(1);
+initTabs($('tabs'));
 render();
