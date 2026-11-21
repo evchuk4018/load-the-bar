@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#111214">
+<title>Load the Bar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: blunt gym tool, no decoration beyond the plates themselves
+   IDEA: a loaded barbell sleeve seen from the side
+   PICTURE: the sleeve with colour-coded plates, drawn live
+   COLOUR and TYPE: chalk-black ground, IWF plate colours, red accent; Barlow Condensed numerals
+   LAYOUT: one phone column: mode, bar picture, total, input, plates per side */
+:root{color-scheme:dark;--bg:#111214;--panel:#1c1d21;--line:#2c2e33;--ink:#f3f3f1;--dim:#9a9ca2;--acc:#ec3b2e}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Barlow,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:14px 16px 40px}
+h1{font:700 22px/1 "Barlow Condensed",sans-serif;margin:4px 0 14px;letter-spacing:.01em}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--panel);border-radius:12px;padding:4px;gap:4px}
+.seg button,.chip,.step,.unit{font:inherit;color:var(--ink);background:none;border:0;cursor:pointer}
+.seg button{height:42px;border-radius:9px;font-weight:600}
+.seg button[aria-pressed=true]{background:var(--acc)}
+.fig{margin:14px 0 4px;aspect-ratio:400/250;width:100%}
+.fig svg{width:100%;height:100%;display:block}
+.total{text-align:center;font:700 clamp(44px,13vw,64px)/1 "Barlow Condensed",sans-serif;margin:6px 0 2px}
+.total small{font-size:.42em;color:var(--dim);margin-left:4px}
+.alt{text-align:center;color:var(--dim);font-size:17px}
+.note{text-align:center;color:#ffb3ab;font-size:15px;min-height:22px;margin:4px 0 0}
+.entry{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;gap:8px;margin:14px 0}
+.step{height:56px;border-radius:12px;background:var(--panel);font-size:28px;font-weight:600}
+.box{position:relative}
+.box input{width:100%;height:56px;border-radius:12px;border:2px solid var(--line);background:#0b0b0c;color:var(--ink);text-align:center;font:700 30px "Barlow Condensed",sans-serif;padding:0 56px}
+.box input:focus{outline:none;border-color:var(--acc)}
+.unit{position:absolute;right:6px;top:6px;height:44px;min-width:44px;padding:0 8px;border-radius:8px;color:var(--acc);font-weight:700;text-transform:uppercase}
+.unit.tog{background:#2a1714}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.lbl{color:var(--dim);font-size:14px;width:100%;margin-bottom:-2px}
+.chip{height:40px;padding:0 14px;border-radius:20px;background:var(--panel);border:1px solid var(--line);font-weight:500;white-space:nowrap}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc)}
+.chip.off{opacity:.45}
+.card{background:var(--panel);border-radius:16px;padding:14px 16px;margin-top:16px}
+.card h2{font:700 20px "Barlow Condensed",sans-serif;margin:0 0 10px}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
+.pl{background:#0b0b0c;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px}
+.dot{width:12px;height:28px;border-radius:3px;flex:none}
+.pl b{font:700 20px/1 "Barlow Condensed",sans-serif;white-space:nowrap}
+.pl b i{font-style:normal;font-size:12px;color:var(--dim);margin-left:2px}
+.pl span{margin-left:auto;font:700 20px "Barlow Condensed",sans-serif;color:var(--acc)}
+.empty{color:var(--dim)}
+.sub{color:var(--dim);font-size:14px;margin-top:10px}
+details summary{cursor:pointer;font:700 20px "Barlow Condensed",sans-serif;list-style:none}
+details summary::after{content:" +";color:var(--acc)}
+details[open] summary::after{content:" −"}
+button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+</style>
+</head>
+<body>
+<main>
+<h1>Load the Bar</h1>
+<div class="seg" id="mode">
+  <button data-m="kg">KG</button><button data-m="lb">LB</button><button data-m="mixed">Mixed</button>
+</div>
+
+<div class="fig"><svg id="bar" viewBox="0 0 400 250" role="img" aria-label="Loaded barbell, one side"></svg></div>
+
+<div class="total" id="total"></div>
+<div class="alt" id="alt"></div>
+<div class="note" id="note"></div>
+
+<div class="entry">
+  <button class="step" id="minus" aria-label="Decrease">−</button>
+  <div class="box">
+    <input id="target" inputmode="decimal" autocomplete="off" aria-label="Target weight">
+    <button class="unit" id="unit" aria-label="Input unit"></button>
+  </div>
+  <button class="step" id="plus" aria-label="Increase">+</button>
+</div>
+
+<div class="row" id="bars"><div class="lbl">Bar</div></div>
+<div class="row"><button class="chip" id="collars"></button></div>
+
+<div class="card">
+  <h2>Per side</h2>
+  <div class="plist" id="plist"></div>
+  <div class="sub" id="barline"></div>
+</div>
+
+<div class="card">
+  <details>
+    <summary>Plates you have</summary>
+    <div class="row" id="avkg"><div class="lbl">Kilogram plates</div></div>
+    <div class="row" id="avlb"><div class="lbl">Pound plates</div></div>
+  </details>
+</div>
+</main>
+
+<script>
+{
+const LB = 0.45359237;
+const P = (u, v, c, d, t, ink) => ({ id: u + v, u, v, kg: u === 'kg' ? v : v * LB, c, d, t, ink: ink || '#fff' });
+const PLATES = [
+  P('kg',25,'#d8312a',1,30), P('kg',20,'#2463d6',1,26), P('kg',15,'#f0c419',1,22,'#111'), P('kg',10,'#2e9e57',1,18),
+  P('kg',5,'#f2f2f2',.62,16,'#111'), P('kg',2.5,'#d8312a',.5,13), P('kg',2,'#2463d6',.46,12), P('kg',1.5,'#f0c419',.42,11,'#111'),
+  P('kg',1.25,'#b9bec4',.4,10,'#111'), P('kg',1,'#2e9e57',.36,9), P('kg',.5,'#f2f2f2',.3,8,'#111'), P('kg',.25,'#b9bec4',.26,7,'#111'),
+  P('lb',55,'#a8261f',1,32), P('lb',45,'#1d4fa8',1,28), P('lb',35,'#c9a114',.9,24,'#111'), P('lb',25,'#23804a',.78,20),
+  P('lb',10,'#4a4e55',.56,14), P('lb',5,'#4a4e55',.45,11), P('lb',2.5,'#4a4e55',.38,9)
+];
+const BARS = [
+  { id: 'b20k', u: 'kg', label: '20 kg', kg: 20 }, { id: 'b15k', u: 'kg', label: '15 kg', kg: 15 }, { id: 'b10k', u: 'kg', label: '10 kg', kg: 10 },
+  { id: 'b45l', u: 'lb', label: '45 lb', kg: 45 * LB }, { id: 'b35l', u: 'lb', label: '35 lb', kg: 35 * LB }, { id: 'b15l', u: 'lb', label: '15 lb', kg: 15 * LB }
+];
+const COLLAR_KG = 2.5;
+const DEFAULT_ON = ['kg25','kg20','kg15','kg10','kg5','kg2.5','kg1.25','lb45','lb35','lb25','lb10','lb5','lb2.5'];
+
+let S = { mode: 'kg', inU: 'kg', target: '100', bar: 'b20k', collars: false, on: DEFAULT_ON };
+try { Object.assign(S, JSON.parse(localStorage.getItem('loadbar') || '{}')); } catch (e) {}
+const save = () => { try { localStorage.setItem('loadbar', JSON.stringify(S)); } catch (e) {} };
+
+const $ = id => document.getElementById(id);
+const fmt = n => String(+(+n).toFixed(2));
+const toU = (kg, u) => u === 'kg' ? kg : kg / LB;
+const units = () => S.mode === 'mixed' ? ['kg', 'lb'] : [S.mode];
+const barObj = () => BARS.find(b => b.id === S.bar) || BARS[0];
+
+function solve(sideKg, avail) {
+  const U = 100, ps = avail.map(p => ({ p, w: Math.round(p.kg * U) }));
+  if (!ps.length || sideKg <= 0) return [];
+  const side = Math.round(sideKg * U), N = side + Math.max(...ps.map(x => x.w));
+  const INF = 30000, dp = new Int16Array(N + 1).fill(INF), from = new Int8Array(N + 1).fill(-1);
+  dp[0] = 0;
+  for (let w = 1; w <= N; w++) for (let i = 0; i < ps.length; i++) {
+    const r = w - ps[i].w;
+    if (r >= 0 && dp[r] + 1 < dp[w]) { dp[w] = dp[r] + 1; from[w] = i; }
+  }
+  let best = 0, bk = [Infinity];
+  for (let w = 0; w <= N; w++) {
+    if (dp[w] >= INF) continue;
+    const k = [Math.round(Math.abs(w - side) / 3), w > side + 2 ? 1 : 0, dp[w]];
+    if (k[0] < bk[0] || (k[0] === bk[0] && (k[1] < bk[1] || (k[1] === bk[1] && k[2] < bk[2])))) { best = w; bk = k; }
+  }
+  const out = [];
+  for (let w = best; w > 0; w -= ps[from[w]].w) out.push(ps[from[w]].p);
+  return out.sort((a, b) => b.kg - a.kg || b.d - a.d);
+}
+
+function draw(list) {
+  const cy = 125, maxD = 236, start = 56, end = 394;
+  const need = list.reduce((a, p) => a + p.t + 2, 0) + (S.collars ? 16 : 0);
+  const k = Math.min(1, (end - start - 8) / Math.max(need, 1));
+  let s = `<defs><linearGradient id="sl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9ccd1"/><stop offset=".5" stop-color="#8e9298"/><stop offset="1" stop-color="#5d6167"/></linearGradient></defs>
+    <rect x="0" y="${cy - 8}" width="42" height="16" fill="url(#sl)"/>
+    <rect x="40" y="${cy - 30}" width="14" height="60" rx="3" fill="url(#sl)"/>
+    <rect x="54" y="${cy - 17}" width="342" height="34" rx="4" fill="url(#sl)"/>`;
+  let x = start;
+  for (const p of list) {
+    const w = p.t * k, h = p.d * maxD, fs = Math.max(6, Math.min(w * .78, 16));
+    s += `<rect x="${x}" y="${cy - h / 2}" width="${w}" height="${h}" rx="${Math.min(3, w / 3)}" fill="${p.c}" stroke="rgba(0,0,0,.45)"/>`;
+    s += `<text transform="translate(${x + w / 2},${cy}) rotate(-90)" text-anchor="middle" dominant-baseline="central" fill="${p.ink}" font-family="Barlow Condensed" font-weight="700" font-size="${fs}">${fmt(p.v)}${S.mode === 'mixed' ? ' ' + p.u.toUpperCase() : ''}</text>`;
+    x += w + 2 * k;
+  }
+  if (S.collars) s += `<rect x="${x + 1}" y="${cy - 26}" width="${14 * k}" height="52" rx="3" fill="#d3d6da" stroke="rgba(0,0,0,.45)"/>`;
+  $('bar').innerHTML = s;
+}
+
+function render() {
+  const us = units();
+  if (!us.includes(S.inU)) S.inU = us[0];
+  if (!us.includes(barObj().u)) S.bar = BARS.find(b => us.includes(b.u)).id;
+
+  document.querySelectorAll('#mode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === S.mode));
+  const u = $('unit'); u.textContent = S.inU; u.classList.toggle('tog', S.mode === 'mixed');
+  u.disabled = S.mode !== 'mixed';
+  if (document.activeElement !== $('target')) $('target').value = S.target;
+
+  $('bars').innerHTML = '<div class="lbl">Bar</div>' + BARS.filter(b => us.includes(b.u))
+    .map(b => `<button class="chip" data-bar="${b.id}" aria-pressed="${b.id === S.bar}">${b.label}</button>`).join('');
+  const cl = S.inU === 'kg' ? '2.5 kg' : '5.5 lb';
+  $('collars').textContent = `Comp collars (${cl} each)`;
+  $('collars').setAttribute('aria-pressed', S.collars);
+
+  const chips = unit => PLATES.filter(p => p.u === unit).map(p =>
+    `<button class="chip${S.on.includes(p.id) ? '' : ' off'}" data-p="${p.id}" aria-pressed="false">${fmt(p.v)}</button>`).join('');
+  $('avkg').innerHTML = '<div class="lbl">Kilogram plates</div>' + chips('kg');
+  $('avlb').innerHTML = '<div class="lbl">Pound plates</div>' + chips('lb');
+  $('avkg').style.display = us.includes('kg') ? '' : 'none';
+  $('avlb').style.display = us.includes('lb') ? '' : 'none';
+
+  const bar = barObj(), col = S.collars ? COLLAR_KG * 2 : 0;
+  const t = parseFloat(String(S.target).replace(',', '.'));
+  const tKg = isNaN(t) ? 0 : (S.inU === 'kg' ? t : t * LB);
+  const avail = PLATES.filter(p => us.includes(p.u) && S.on.includes(p.id));
+  const list = solve(Math.min((tKg - bar.kg - col) / 2, 1000), avail);
+  const gotKg = bar.kg + col + 2 * list.reduce((a, p) => a + p.kg, 0);
+  const other = S.inU === 'kg' ? 'lb' : 'kg';
+
+  draw(list);
+  $('total').innerHTML = `${fmt(toU(gotKg, S.inU))}<small>${S.inU}</small>`;
+  $('alt').textContent = `${fmt(toU(gotKg, other))} ${other}`;
+  const diff = toU(gotKg, S.inU) - (isNaN(t) ? 0 : t);
+  $('note').textContent = isNaN(t) || !t ? '' :
+    tKg < bar.kg + col - 0.01 ? 'Target is lighter than the empty bar.' :
+    Math.abs(diff) >= 0.1 ? `Can't hit ${fmt(t)} ${S.inU} exactly — closest is ${diff > 0 ? '+' : '−'}${fmt(Math.abs(diff))} ${S.inU}` : '';
+
+  const groups = [];
+  for (const p of list) { const g = groups.find(x => x.p === p); g ? g.n++ : groups.push({ p, n: 1 }); }
+  $('plist').innerHTML = groups.length ? groups.map(({ p, n }) =>
+    `<div class="pl"><div class="dot" style="background:${p.c}"></div><b>${fmt(p.v)}<i>${p.u}</i></b><span>×${n}</span></div>`).join('')
+    : '<div class="empty">Empty bar</div>';
+  $('barline').textContent = `Bar ${bar.label}` + (S.collars ? ` + collars ${fmt(toU(col, S.inU))} ${S.inU}` : '');
+  save();
+}
+
+function setInU(nu) {
+  if (nu === S.inU) return;
+  const t = parseFloat(S.target), step = nu === 'kg' ? 2.5 : 5;
+  if (!isNaN(t)) S.target = fmt(Math.round(toU(S.inU === 'kg' ? t : t * LB, nu) / step) * step);
+  S.inU = nu;
+}
+
+$('mode').onclick = e => {
+  const m = e.target.dataset.m; if (!m) return;
+  if (m !== 'mixed') setInU(m);
+  S.mode = m; render();
+};
+$('unit').onclick = () => { if (S.mode === 'mixed') { setInU(S.inU === 'kg' ? 'lb' : 'kg'); render(); } };
+$('target').oninput = e => { S.target = e.target.value; render(); };
+const bump = dir => {
+  const step = S.inU === 'kg' ? 2.5 : 5, t = parseFloat(S.target) || 0;
+  S.target = fmt(Math.max(0, Math.round(t / step) * step + dir * step)); render();
+};
+$('minus').onclick = () => bump(-1);
+$('plus').onclick = () => bump(1);
+$('bars').onclick = e => { const b = e.target.dataset.bar; if (b) { S.bar = b; render(); } };
+$('collars').onclick = () => { S.collars = !S.collars; render(); };
+document.querySelector('details').onclick = e => {
+  const id = e.target.dataset && e.target.dataset.p; if (!id) return;
+  S.on = S.on.includes(id) ? S.on.filter(x => x !== id) : [...S.on, id]; render();
+};
+render();
+}
+</script>
+</body>
+</html>
