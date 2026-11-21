@@ -1,4 +1,5 @@
 import { drawBar } from './draw';
+import { drawPad } from './platepad';
 import { barKg, platesFor } from './plates';
 import { solve } from './solve';
 import { load, save } from './state';
@@ -11,6 +12,7 @@ const S = load();
 function render(): void {
   document.querySelectorAll<HTMLButtonElement>('#mode button')
     .forEach(b => b.setAttribute('aria-pressed', String(b.dataset.m === S.mode)));
+  if ($('unit').textContent !== S.mode) drawPad($('pad'), platesFor(S.mode), addPlate);
   $('unit').textContent = S.mode;
   if (document.activeElement !== input) input.value = S.target;
 
@@ -46,6 +48,12 @@ const bump = (dir: number) => {
   S.target = fmt(Math.max(0, Math.round(t / st) * st + dir * st));
   render();
 };
+function addPlate(v: number): void {
+  const t = parseFloat(S.target.replace(',', '.')) || 0;
+  const bar = toU(barKg(S.mode), S.mode);
+  S.target = fmt(Math.max(bar, Math.max(t, bar) + 2 * v));
+  render();
+}
 $('minus').onclick = () => bump(-1);
 $('plus').onclick = () => bump(1);
 render();

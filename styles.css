@@ -24,4 +24,8 @@ h1{font:700 22px/1 "Barlow Condensed",sans-serif;margin:4px 0 14px;letter-spacin
 .box input{width:100%;height:56px;border-radius:12px;border:2px solid var(--line);background:#0b0b0c;color:var(--ink);text-align:center;font:700 30px "Barlow Condensed",sans-serif;padding:0 56px}
 .box input:focus{outline:none;border-color:var(--acc)}
 .unit{position:absolute;right:6px;top:6px;line-height:44px;padding:0 8px;color:var(--acc);font-weight:700;text-transform:uppercase}
+.pad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.pp{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px}
+.pp .step{height:44px;font-size:22px}
+.chip{display:grid;place-items:center;height:44px;border-radius:10px;font:700 22px "Barlow Condensed",sans-serif}
 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
