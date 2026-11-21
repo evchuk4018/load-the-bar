@@ -7,7 +7,7 @@ Simple barbell plate loading calculator, written in TypeScript.
 - Uses the fewest plates possible
 - Shows the closest load when the target can't be hit exactly
 - 20 kg bar in kg, 45 lb bar in lb
-- Calculator tab: estimated 1RM (Epley), bodyweight multiple, DOTS and IPF GL points (GLP, classic; total and bench only)
+- Calculator tab: estimated 1RM (Epley), bodyweight multiple, DOTS and IPF GL points (GLP, men's classic; total and bench only)
 
 ## Use
 
