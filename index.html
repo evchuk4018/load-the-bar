@@ -36,24 +36,9 @@ h1{font:700 22px/1 "Barlow Condensed",sans-serif;margin:4px 0 14px;letter-spacin
 .box input:focus{outline:none;border-color:var(--acc)}
 .unit{position:absolute;right:6px;top:6px;height:44px;min-width:44px;padding:0 8px;border-radius:8px;color:var(--acc);font-weight:700;text-transform:uppercase}
 .unit.tog{background:#2a1714}
-.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
-.lbl{color:var(--dim);font-size:14px;width:100%;margin-bottom:-2px}
+.row{display:flex;justify-content:center;margin:10px 0}
 .chip{height:40px;padding:0 14px;border-radius:20px;background:var(--panel);border:1px solid var(--line);font-weight:500;white-space:nowrap}
 .chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc)}
-.chip.off{opacity:.45}
-.card{background:var(--panel);border-radius:16px;padding:14px 16px;margin-top:16px}
-.card h2{font:700 20px "Barlow Condensed",sans-serif;margin:0 0 10px}
-.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:8px}
-.pl{background:#0b0b0c;border-radius:10px;padding:8px 10px;display:flex;align-items:center;gap:8px}
-.dot{width:12px;height:28px;border-radius:3px;flex:none}
-.pl b{font:700 20px/1 "Barlow Condensed",sans-serif;white-space:nowrap}
-.pl b i{font-style:normal;font-size:12px;color:var(--dim);margin-left:2px}
-.pl span{margin-left:auto;font:700 20px "Barlow Condensed",sans-serif;color:var(--acc)}
-.empty{color:var(--dim)}
-.sub{color:var(--dim);font-size:14px;margin-top:10px}
-details summary{cursor:pointer;font:700 20px "Barlow Condensed",sans-serif;list-style:none}
-details summary::after{content:" +";color:var(--acc)}
-details[open] summary::after{content:" −"}
 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 </style>
 </head>
@@ -79,22 +64,7 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
   <button class="step" id="plus" aria-label="Increase">+</button>
 </div>
 
-<div class="row" id="bars"><div class="lbl">Bar</div></div>
 <div class="row"><button class="chip" id="collars"></button></div>
-
-<div class="card">
-  <h2>Per side</h2>
-  <div class="plist" id="plist"></div>
-  <div class="sub" id="barline"></div>
-</div>
-
-<div class="card">
-  <details>
-    <summary>Plates you have</summary>
-    <div class="row" id="avkg"><div class="lbl">Kilogram plates</div></div>
-    <div class="row" id="avlb"><div class="lbl">Pound plates</div></div>
-  </details>
-</div>
 </main>
 
 <script>
@@ -108,14 +78,11 @@ const PLATES = [
   P('lb',55,'#a8261f',1,32), P('lb',45,'#1d4fa8',1,28), P('lb',35,'#c9a114',.9,24,'#111'), P('lb',25,'#23804a',.78,20),
   P('lb',10,'#4a4e55',.56,14), P('lb',5,'#4a4e55',.45,11), P('lb',2.5,'#4a4e55',.38,9)
 ];
-const BARS = [
-  { id: 'b20k', u: 'kg', label: '20 kg', kg: 20 }, { id: 'b15k', u: 'kg', label: '15 kg', kg: 15 }, { id: 'b10k', u: 'kg', label: '10 kg', kg: 10 },
-  { id: 'b45l', u: 'lb', label: '45 lb', kg: 45 * LB }, { id: 'b35l', u: 'lb', label: '35 lb', kg: 35 * LB }, { id: 'b15l', u: 'lb', label: '15 lb', kg: 15 * LB }
-];
+const BARS = [{ id: 'b20k', u: 'kg', label: '20 kg', kg: 20 }, { id: 'b45l', u: 'lb', label: '45 lb', kg: 45 * LB }];
 const COLLAR_KG = 2.5;
 const DEFAULT_ON = ['kg25','kg20','kg15','kg10','kg5','kg2.5','kg1.25','lb45','lb35','lb25','lb10','lb5','lb2.5'];
 
-let S = { mode: 'kg', inU: 'kg', target: '100', bar: 'b20k', collars: false, on: DEFAULT_ON };
+let S = { mode: 'kg', inU: 'kg', target: '100', collars: false };
 try { Object.assign(S, JSON.parse(localStorage.getItem('loadbar') || '{}')); } catch (e) {}
 const save = () => { try { localStorage.setItem('loadbar', JSON.stringify(S)); } catch (e) {} };
 
@@ -123,7 +90,7 @@ const $ = id => document.getElementById(id);
 const fmt = n => String(+(+n).toFixed(2));
 const toU = (kg, u) => u === 'kg' ? kg : kg / LB;
 const units = () => S.mode === 'mixed' ? ['kg', 'lb'] : [S.mode];
-const barObj = () => BARS.find(b => b.id === S.bar) || BARS[0];
+const barObj = () => BARS.find(b => b.id === (S.inU === 'lb' ? 'b45l' : 'b20k'));
 
 function solve(sideKg, avail) {
   const U = 100, ps = avail.map(p => ({ p, w: Math.round(p.kg * U) }));
@@ -168,30 +135,21 @@ function draw(list) {
 function render() {
   const us = units();
   if (!us.includes(S.inU)) S.inU = us[0];
-  if (!us.includes(barObj().u)) S.bar = BARS.find(b => us.includes(b.u)).id;
 
   document.querySelectorAll('#mode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === S.mode));
   const u = $('unit'); u.textContent = S.inU; u.classList.toggle('tog', S.mode === 'mixed');
   u.disabled = S.mode !== 'mixed';
   if (document.activeElement !== $('target')) $('target').value = S.target;
 
-  $('bars').innerHTML = '<div class="lbl">Bar</div>' + BARS.filter(b => us.includes(b.u))
-    .map(b => `<button class="chip" data-bar="${b.id}" aria-pressed="${b.id === S.bar}">${b.label}</button>`).join('');
   const cl = S.inU === 'kg' ? '2.5 kg' : '5.5 lb';
   $('collars').textContent = `Comp collars (${cl} each)`;
   $('collars').setAttribute('aria-pressed', S.collars);
 
-  const chips = unit => PLATES.filter(p => p.u === unit).map(p =>
-    `<button class="chip${S.on.includes(p.id) ? '' : ' off'}" data-p="${p.id}" aria-pressed="false">${fmt(p.v)}</button>`).join('');
-  $('avkg').innerHTML = '<div class="lbl">Kilogram plates</div>' + chips('kg');
-  $('avlb').innerHTML = '<div class="lbl">Pound plates</div>' + chips('lb');
-  $('avkg').style.display = us.includes('kg') ? '' : 'none';
-  $('avlb').style.display = us.includes('lb') ? '' : 'none';
 
   const bar = barObj(), col = S.collars ? COLLAR_KG * 2 : 0;
   const t = parseFloat(String(S.target).replace(',', '.'));
   const tKg = isNaN(t) ? 0 : (S.inU === 'kg' ? t : t * LB);
-  const avail = PLATES.filter(p => us.includes(p.u) && S.on.includes(p.id));
+  const avail = PLATES.filter(p => us.includes(p.u) && DEFAULT_ON.includes(p.id));
   const list = solve(Math.min((tKg - bar.kg - col) / 2, 1000), avail);
   const gotKg = bar.kg + col + 2 * list.reduce((a, p) => a + p.kg, 0);
   const other = S.inU === 'kg' ? 'lb' : 'kg';
@@ -204,12 +162,6 @@ function render() {
     tKg < bar.kg + col - 0.01 ? 'Target is lighter than the empty bar.' :
     Math.abs(diff) >= 0.1 ? `Can't hit ${fmt(t)} ${S.inU} exactly — closest is ${diff > 0 ? '+' : '−'}${fmt(Math.abs(diff))} ${S.inU}` : '';
 
-  const groups = [];
-  for (const p of list) { const g = groups.find(x => x.p === p); g ? g.n++ : groups.push({ p, n: 1 }); }
-  $('plist').innerHTML = groups.length ? groups.map(({ p, n }) =>
-    `<div class="pl"><div class="dot" style="background:${p.c}"></div><b>${fmt(p.v)}<i>${p.u}</i></b><span>×${n}</span></div>`).join('')
-    : '<div class="empty">Empty bar</div>';
-  $('barline').textContent = `Bar ${bar.label}` + (S.collars ? ` + collars ${fmt(toU(col, S.inU))} ${S.inU}` : '');
   save();
 }
 
@@ -233,12 +185,7 @@ const bump = dir => {
 };
 $('minus').onclick = () => bump(-1);
 $('plus').onclick = () => bump(1);
-$('bars').onclick = e => { const b = e.target.dataset.bar; if (b) { S.bar = b; render(); } };
 $('collars').onclick = () => { S.collars = !S.collars; render(); };
-document.querySelector('details').onclick = e => {
-  const id = e.target.dataset && e.target.dataset.p; if (!id) return;
-  S.on = S.on.includes(id) ? S.on.filter(x => x !== id) : [...S.on, id]; render();
-};
 render();
 }
 </script>

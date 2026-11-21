@@ -4,10 +4,9 @@ Simple barbell plate loading calculator. One HTML file, no dependencies, no buil
 
 - KG, LB and Mixed (kg + lb plates together) modes
 - Live picture of the loaded bar in competition plate colours
-- Plates per side, using the fewest plates possible
+- Uses the fewest plates possible
 - Shows the closest load when the target can't be hit exactly
-- Choose bar (20/15/10 kg, 45/35/15 lb) and optional 2.5 kg comp collars
-- Turn off plates you don't have; settings are saved in the browser
+- 20 kg bar in kg, 45 lb bar in lb, optional 2.5 kg comp collars
 
 ## Use
 
