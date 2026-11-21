@@ -22,7 +22,7 @@ const PLATES: Plate[] = [
   P('lb',10,'#4a4e55',.56,14), P('lb',5,'#4a4e55',.45,11), P('lb',2.5,'#4a4e55',.38,9),
 ];
 
-const DEFAULT_ON = ['kg25','kg20','kg15','kg10','kg5','kg2.5','kg1.25','lb45','lb35','lb25','lb10','lb5','lb2.5'];
+const DEFAULT_ON = ['kg25','kg20','kg15','kg10','kg5','kg2.5','kg1.25','kg0.5','lb45','lb35','lb25','lb10','lb5','lb2.5'];
 
 export const platesFor = (u: Unit): Plate[] => PLATES.filter(p => p.u === u && DEFAULT_ON.includes(p.id));
 

@@ -27,5 +27,5 @@ h1{font:700 22px/1 "Barlow Condensed",sans-serif;margin:4px 0 14px;letter-spacin
 .pad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .pp{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;gap:6px}
 .pp .step{height:44px;font-size:22px}
-.chip{display:grid;place-items:center;height:44px;border-radius:10px;font:700 22px "Barlow Condensed",sans-serif}
+.chip{display:grid;place-items:center;justify-self:center;height:44px;aspect-ratio:1;border-radius:50%;font:700 22px "Barlow Condensed",sans-serif}
 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
