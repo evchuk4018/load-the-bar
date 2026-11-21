@@ -24,7 +24,7 @@ function render(): void {
   const other: Unit = S.mode === 'kg' ? 'lb' : 'kg';
 
   drawBar($('bar'), list);
-  drawPad($('pad'), platesFor(S.mode), list, addPlate);
+  drawPad($('pad'), [...platesFor(S.mode), ...platesFor(other)], list, S.mode, addPlate);
   $('total').innerHTML = `${fmt(toU(gotKg, S.mode))}<small>${S.mode}</small>`;
   $('alt').textContent = `${fmt(toU(gotKg, other))} ${other}`;
   const diff = toU(gotKg, S.mode) - (isNaN(t) ? 0 : t);
@@ -38,10 +38,10 @@ function render(): void {
 $('mode').onclick = e => {
   const m = (e.target as HTMLElement).dataset.m as Unit | undefined;
   if (!m || m === S.mode) return;
-  const t = parseFloat(S.target);
-  if (!isNaN(t)) S.target = fmt(Math.round(toU(toKg(t, S.mode), m) / step(m)) * step(m));
+  // Keep the plates on the bar; only the displayed unit changes.
+  manual = cur;
   S.mode = m;
-  manual = null;
+  S.target = fmt(toU(barKg(m) + 2 * cur.reduce((a, p) => a + p.kg, 0), m));
   render();
 };
 input.oninput = () => { S.target = input.value; manual = null; render(); };
