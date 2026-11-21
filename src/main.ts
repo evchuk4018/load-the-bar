@@ -6,6 +6,7 @@ import { solve } from './solve';
 import { initTabs } from './tabs';
 import { load, save } from './state';
 import { fmt, step, toKg, toU, Unit } from './units';
+import { initWorkout } from './workout';
 
 const $ = (id: string) => document.getElementById(id)!;
 const input = $('target') as HTMLInputElement;
@@ -64,4 +65,5 @@ function addPlate(p: Plate, dir: number): void {
 $('minus').onclick = () => bump(-1);
 $('plus').onclick = () => bump(1);
 initTabs($('tabs'));
+initWorkout($('history'), () => S.mode);
 render();
