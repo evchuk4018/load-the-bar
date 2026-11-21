@@ -52,9 +52,9 @@ const bump = (dir: number) => {
   render();
 };
 function addPlate(p: Plate, dir: number): void {
-  const list = [...cur], i = list.indexOf(p);
+  const list = [...cur], i = list.lastIndexOf(p);
   if (dir > 0) list.push(p); else if (i >= 0) list.splice(i, 1); else return;
-  manual = list.sort((a, b) => b.kg - a.kg);
+  manual = list;
   S.target = fmt(toU(barKg(S.mode) + 2 * list.reduce((a, x) => a + x.kg, 0), S.mode));
   render();
 }
