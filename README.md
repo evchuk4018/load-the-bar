@@ -1,8 +1,8 @@
 # Load the Bar
 
-Simple barbell plate loading calculator. One HTML file, no dependencies, no build step.
+Simple barbell plate loading calculator, written in TypeScript.
 
-- KG, LB and Mixed (kg + lb plates together) modes
+- KG and LB modes
 - Live picture of the loaded bar in competition plate colours
 - Uses the fewest plates possible
 - Shows the closest load when the target can't be hit exactly
@@ -10,4 +10,11 @@ Simple barbell plate loading calculator. One HTML file, no dependencies, no buil
 
 ## Use
 
-Open `index.html` in a browser, or host it with GitHub Pages and add it to your phone's home screen.
+```
+npm install
+npm run build
+```
+
+Then open `index.html` in a browser. To host it (e.g. GitHub Pages), publish `index.html`, `styles.css` and `dist/app.js`.
+
+Source lives in `src/`: `units` (conversions), `plates` (plate and bar data), `solve` (plate picker), `draw` (bar picture), `state` (saved settings), `main` (page wiring).

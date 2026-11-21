@@ -1,0 +1,27 @@
+/* VOICE: blunt gym tool, no decoration beyond the plates themselves
+   IDEA: a loaded barbell sleeve seen from the side
+   PICTURE: the sleeve with colour-coded plates, drawn live
+   COLOUR and TYPE: chalk-black ground, IWF plate colours, red accent; Barlow Condensed numerals
+   LAYOUT: one phone column: mode, bar picture, total, input, plates per side */
+:root{color-scheme:dark;--bg:#111214;--panel:#1c1d21;--line:#2c2e33;--ink:#f3f3f1;--dim:#9a9ca2;--acc:#ec3b2e}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Barlow,system-ui,sans-serif;overflow-x:clip;-webkit-tap-highlight-color:transparent}
+main{max-width:520px;margin:0 auto;padding:14px 16px 40px}
+h1{font:700 22px/1 "Barlow Condensed",sans-serif;margin:4px 0 14px;letter-spacing:.01em}
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--panel);border-radius:12px;padding:4px;gap:4px}
+.seg button,.step{font:inherit;color:var(--ink);background:none;border:0;cursor:pointer}
+.seg button{height:42px;border-radius:9px;font-weight:600}
+.seg button[aria-pressed=true]{background:var(--acc)}
+.fig{margin:14px 0 4px;aspect-ratio:400/250;width:100%}
+.fig svg{width:100%;height:100%;display:block}
+.total{text-align:center;font:700 clamp(44px,13vw,64px)/1 "Barlow Condensed",sans-serif;margin:6px 0 2px}
+.total small{font-size:.42em;color:var(--dim);margin-left:4px}
+.alt{text-align:center;color:var(--dim);font-size:17px}
+.note{text-align:center;color:#ffb3ab;font-size:15px;min-height:22px;margin:4px 0 0}
+.entry{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;gap:8px;margin:14px 0}
+.step{height:56px;border-radius:12px;background:var(--panel);font-size:28px;font-weight:600}
+.box{position:relative}
+.box input{width:100%;height:56px;border-radius:12px;border:2px solid var(--line);background:#0b0b0c;color:var(--ink);text-align:center;font:700 30px "Barlow Condensed",sans-serif;padding:0 56px}
+.box input:focus{outline:none;border-color:var(--acc)}
+.unit{position:absolute;right:6px;top:6px;line-height:44px;padding:0 8px;color:var(--acc);font-weight:700;text-transform:uppercase}
+button:focus-visible{outline:2px solid #fff;outline-offset:2px}

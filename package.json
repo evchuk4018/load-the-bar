@@ -1,0 +1,11 @@
+{
+  "name": "load-the-bar",
+  "private": true,
+  "scripts": {
+    "build": "tsc && esbuild src/main.ts --bundle --minify --outfile=dist/app.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "typescript": "^7.0.2"
+  }
+}
