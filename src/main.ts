@@ -1,3 +1,4 @@
+import { initCalc } from './calc';
 import { drawBar } from './draw';
 import { drawPad } from './platepad';
 import { barKg, Plate, platesFor } from './plates';
@@ -10,6 +11,7 @@ const $ = (id: string) => document.getElementById(id)!;
 const input = $('target') as HTMLInputElement;
 const S = load();
 let manual: Plate[] | null = null, cur: Plate[] = [];
+const renderCalc = initCalc($('calc'), S);
 
 function render(): void {
   document.querySelectorAll<HTMLButtonElement>('#mode button')
@@ -33,7 +35,7 @@ function render(): void {
     tKg < bar - 0.01 ? 'Target is lighter than the empty bar.' :
     Math.abs(diff) >= 0.1 ? `Can't hit ${fmt(t)} ${S.mode} exactly — closest is ${diff > 0 ? '+' : '−'}${fmt(Math.abs(diff))} ${S.mode}` : '';
 
-  save(S);
+  renderCalc();
 }
 
 $('mode').onclick = e => {
