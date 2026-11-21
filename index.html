@@ -20,7 +20,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 Barlow,system
 main{max-width:520px;margin:0 auto;padding:14px 16px 40px}
 h1{font:700 22px/1 "Barlow Condensed",sans-serif;margin:4px 0 14px;letter-spacing:.01em}
 .seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));background:var(--panel);border-radius:12px;padding:4px;gap:4px}
-.seg button,.chip,.step,.unit{font:inherit;color:var(--ink);background:none;border:0;cursor:pointer}
+.seg button,.step,.unit{font:inherit;color:var(--ink);background:none;border:0;cursor:pointer}
 .seg button{height:42px;border-radius:9px;font-weight:600}
 .seg button[aria-pressed=true]{background:var(--acc)}
 .fig{margin:14px 0 4px;aspect-ratio:400/250;width:100%}
@@ -36,9 +36,6 @@ h1{font:700 22px/1 "Barlow Condensed",sans-serif;margin:4px 0 14px;letter-spacin
 .box input:focus{outline:none;border-color:var(--acc)}
 .unit{position:absolute;right:6px;top:6px;height:44px;min-width:44px;padding:0 8px;border-radius:8px;color:var(--acc);font-weight:700;text-transform:uppercase}
 .unit.tog{background:#2a1714}
-.row{display:flex;justify-content:center;margin:10px 0}
-.chip{height:40px;padding:0 14px;border-radius:20px;background:var(--panel);border:1px solid var(--line);font-weight:500;white-space:nowrap}
-.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc)}
 button:focus-visible{outline:2px solid #fff;outline-offset:2px}
 </style>
 </head>
@@ -64,7 +61,6 @@ button:focus-visible{outline:2px solid #fff;outline-offset:2px}
   <button class="step" id="plus" aria-label="Increase">+</button>
 </div>
 
-<div class="row"><button class="chip" id="collars"></button></div>
 </main>
 
 <script>
@@ -79,10 +75,9 @@ const PLATES = [
   P('lb',10,'#4a4e55',.56,14), P('lb',5,'#4a4e55',.45,11), P('lb',2.5,'#4a4e55',.38,9)
 ];
 const BARS = [{ id: 'b20k', u: 'kg', label: '20 kg', kg: 20 }, { id: 'b45l', u: 'lb', label: '45 lb', kg: 45 * LB }];
-const COLLAR_KG = 2.5;
 const DEFAULT_ON = ['kg25','kg20','kg15','kg10','kg5','kg2.5','kg1.25','lb45','lb35','lb25','lb10','lb5','lb2.5'];
 
-let S = { mode: 'kg', inU: 'kg', target: '100', collars: false };
+let S = { mode: 'kg', inU: 'kg', target: '100' };
 try { Object.assign(S, JSON.parse(localStorage.getItem('loadbar') || '{}')); } catch (e) {}
 const save = () => { try { localStorage.setItem('loadbar', JSON.stringify(S)); } catch (e) {} };
 
@@ -115,7 +110,7 @@ function solve(sideKg, avail) {
 
 function draw(list) {
   const cy = 125, maxD = 236, start = 56, end = 394;
-  const need = list.reduce((a, p) => a + p.t + 2, 0) + (S.collars ? 16 : 0);
+  const need = list.reduce((a, p) => a + p.t + 2, 0);
   const k = Math.min(1, (end - start - 8) / Math.max(need, 1));
   let s = `<defs><linearGradient id="sl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c9ccd1"/><stop offset=".5" stop-color="#8e9298"/><stop offset="1" stop-color="#5d6167"/></linearGradient></defs>
     <rect x="0" y="${cy - 8}" width="42" height="16" fill="url(#sl)"/>
@@ -128,7 +123,6 @@ function draw(list) {
     s += `<text transform="translate(${x + w / 2},${cy}) rotate(-90)" text-anchor="middle" dominant-baseline="central" fill="${p.ink}" font-family="Barlow Condensed" font-weight="700" font-size="${fs}">${fmt(p.v)}${S.mode === 'mixed' ? ' ' + p.u.toUpperCase() : ''}</text>`;
     x += w + 2 * k;
   }
-  if (S.collars) s += `<rect x="${x + 1}" y="${cy - 26}" width="${14 * k}" height="52" rx="3" fill="#d3d6da" stroke="rgba(0,0,0,.45)"/>`;
   $('bar').innerHTML = s;
 }
 
@@ -141,17 +135,14 @@ function render() {
   u.disabled = S.mode !== 'mixed';
   if (document.activeElement !== $('target')) $('target').value = S.target;
 
-  const cl = S.inU === 'kg' ? '2.5 kg' : '5.5 lb';
-  $('collars').textContent = `Comp collars (${cl} each)`;
-  $('collars').setAttribute('aria-pressed', S.collars);
 
 
-  const bar = barObj(), col = S.collars ? COLLAR_KG * 2 : 0;
+  const bar = barObj();
   const t = parseFloat(String(S.target).replace(',', '.'));
   const tKg = isNaN(t) ? 0 : (S.inU === 'kg' ? t : t * LB);
   const avail = PLATES.filter(p => us.includes(p.u) && DEFAULT_ON.includes(p.id));
-  const list = solve(Math.min((tKg - bar.kg - col) / 2, 1000), avail);
-  const gotKg = bar.kg + col + 2 * list.reduce((a, p) => a + p.kg, 0);
+  const list = solve(Math.min((tKg - bar.kg) / 2, 1000), avail);
+  const gotKg = bar.kg + 2 * list.reduce((a, p) => a + p.kg, 0);
   const other = S.inU === 'kg' ? 'lb' : 'kg';
 
   draw(list);
@@ -159,7 +150,7 @@ function render() {
   $('alt').textContent = `${fmt(toU(gotKg, other))} ${other}`;
   const diff = toU(gotKg, S.inU) - (isNaN(t) ? 0 : t);
   $('note').textContent = isNaN(t) || !t ? '' :
-    tKg < bar.kg + col - 0.01 ? 'Target is lighter than the empty bar.' :
+    tKg < bar.kg - 0.01 ? 'Target is lighter than the empty bar.' :
     Math.abs(diff) >= 0.1 ? `Can't hit ${fmt(t)} ${S.inU} exactly — closest is ${diff > 0 ? '+' : '−'}${fmt(Math.abs(diff))} ${S.inU}` : '';
 
   save();
@@ -185,7 +176,6 @@ const bump = dir => {
 };
 $('minus').onclick = () => bump(-1);
 $('plus').onclick = () => bump(1);
-$('collars').onclick = () => { S.collars = !S.collars; render(); };
 render();
 }
 </script>

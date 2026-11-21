@@ -6,7 +6,7 @@ Simple barbell plate loading calculator. One HTML file, no dependencies, no buil
 - Live picture of the loaded bar in competition plate colours
 - Uses the fewest plates possible
 - Shows the closest load when the target can't be hit exactly
-- 20 kg bar in kg, 45 lb bar in lb, optional 2.5 kg comp collars
+- 20 kg bar in kg, 45 lb bar in lb
 
 ## Use
 
