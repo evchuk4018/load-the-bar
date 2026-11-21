@@ -7,13 +7,16 @@ import { initProj } from './projpage';
 import { initTabs } from './tabs';
 import { load, save } from './state';
 import { fmt, step, toKg, toU, Unit } from './units';
+import { initWorkout } from './workout';
+import { createStore } from './workout/store';
 
 const $ = (id: string) => document.getElementById(id)!;
 const input = $('target') as HTMLInputElement;
 const S = load();
 let manual: Plate[] | null = null, cur: Plate[] = [];
 const renderCalc = initCalc($('calc'), S);
-const renderProj = initProj($('proj'), S);
+const store = createStore();
+const renderProj = initProj($('proj'), S, store);
 
 function render(): void {
   document.querySelectorAll<HTMLButtonElement>('#mode button')
@@ -38,7 +41,6 @@ function render(): void {
     Math.abs(diff) >= 0.1 ? `Can't hit ${fmt(t)} ${S.mode} exactly — closest is ${diff > 0 ? '+' : '−'}${fmt(Math.abs(diff))} ${S.mode}` : '';
 
   renderCalc();
-  renderProj();
 }
 
 $('mode').onclick = e => {
@@ -66,5 +68,6 @@ function addPlate(p: Plate, dir: number): void {
 }
 $('minus').onclick = () => bump(-1);
 $('plus').onclick = () => bump(1);
-initTabs($('tabs'));
+initTabs($('tabs'), id => { if (id === 'proj') renderProj(); });
+initWorkout($('history'), store, () => S.mode);
 render();

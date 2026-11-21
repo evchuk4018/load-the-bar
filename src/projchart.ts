@@ -1,5 +1,4 @@
-import { dateOf } from './log';
-import { Point, Trend } from './project';
+import { dateOf, Point, Trend } from './project';
 import { toU, Unit } from './units';
 
 const W = 400, H = 220, L = 40, R = 14, T = 14, B = 26;
