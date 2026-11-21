@@ -3,6 +3,7 @@ import { drawBar } from './draw';
 import { drawPad } from './platepad';
 import { barKg, Plate, platesFor } from './plates';
 import { solve } from './solve';
+import { initProj } from './projpage';
 import { initTabs } from './tabs';
 import { load, save } from './state';
 import { fmt, step, toKg, toU, Unit } from './units';
@@ -12,6 +13,7 @@ const input = $('target') as HTMLInputElement;
 const S = load();
 let manual: Plate[] | null = null, cur: Plate[] = [];
 const renderCalc = initCalc($('calc'), S);
+const renderProj = initProj($('proj'), S);
 
 function render(): void {
   document.querySelectorAll<HTMLButtonElement>('#mode button')
@@ -36,6 +38,7 @@ function render(): void {
     Math.abs(diff) >= 0.1 ? `Can't hit ${fmt(t)} ${S.mode} exactly — closest is ${diff > 0 ? '+' : '−'}${fmt(Math.abs(diff))} ${S.mode}` : '';
 
   renderCalc();
+  renderProj();
 }
 
 $('mode').onclick = e => {
